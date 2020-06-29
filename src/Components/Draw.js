@@ -32,6 +32,7 @@ class Draw extends React.Component{
             height:1000,
             width:1000,
             background:"#525576"
+            
         }
         let planetComponents=this.props.planets.map(planet=><Planet x={planet.x} y={planet.y} id={planet.id} active={planet.active} color={planet.active ? this.colorRand():"#acb4b6"}/>)
         let pathComponents=this.props.connections.map(path=>{            
@@ -44,6 +45,7 @@ class Draw extends React.Component{
             <div >        
                 <svg style={gridStyle}>
                     {pathComponents}
+                    
                     {planetComponents}
                 </svg>            
             </div>
