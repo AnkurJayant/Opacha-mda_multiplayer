@@ -6,7 +6,8 @@ class Draw extends React.Component{
         super()
         this.state={
              color:["#87da97","#da868e","#d7da87","#4FC3F7"],
-             count:0
+             count:0,
+             visible:"hidden"
         }
         this.colorRand=this.colorRand.bind(this)
     }
@@ -26,15 +27,18 @@ class Draw extends React.Component{
                 color.splice(randId,1)                                                                                            
                 return(randColor)
     }
+    handleClick(mode){
+
+    }
 
     render(){                
         const gridStyle={
-            height:1000,
-            width:1000,
-            background:"#525576"
-            
+            height:610,
+            width:510,
+            background:"#525576",
+
         }
-        let planetComponents=this.props.planets.map(planet=><Planet x={planet.x} y={planet.y} id={planet.id} active={planet.active} color={planet.active ? this.colorRand():"#acb4b6"}/>)
+        let planetComponents=this.props.planets.map(planet=><Planet gridStyle={gridStyle} x={planet.x} y={planet.y} id={planet.id}  active={planet.active} color={planet.active ? this.colorRand() :"#acb4b6"} />)
         let pathComponents=this.props.connections.map(path=>{            
             let P1Cors=this.getPCor(path.p1)
             let P2Cors=this.getPCor(path.p2)
@@ -43,9 +47,8 @@ class Draw extends React.Component{
         console.log(pathComponents)
         return(
             <div >        
-                <svg style={gridStyle}>
-                    {pathComponents}
-                    
+                <svg style={gridStyle}>                    
+                    {pathComponents}                                        
                     {planetComponents}
                 </svg>            
             </div>
