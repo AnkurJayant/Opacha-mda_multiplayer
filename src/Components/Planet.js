@@ -47,8 +47,8 @@ class Planet extends React.Component{
                     <circle cx = {styles.Cx} cy = {styles.Cy} r = {styles.radius+2} fill = "#525576" stroke="#acb4b6"  strokeDasharray="5,5"></circle>
                     <circle cx = {styles.Cx} cy = {styles.Cy} r = {styles.radius} fill = {styles.backgroundColor} ></circle>    
                             
-                    <text x={styles.textX} y={styles.textY} textAnchor="middle">
-                        <button>some</button>
+                    <text x={styles.textX} y={styles.textY} textAnchor="middle">                        
+                        
                         {                    
                             this.props.active? this.state.power : 3
                         }                    

@@ -1,5 +1,5 @@
 {
-  "players": 4,
+  "players": 2,
   "planets": [
     {
       "x": 17.2,
@@ -41,13 +41,13 @@
       "x": 45.0,
       "y": 48.4,
       "id": 6,
-      "active":true
+      "active":false
     },
     {
       "x": 70.2,
       "y": 48.4,
       "id": 7,
-      "active":true
+      "active":false
     },
     {
       "x": 47.6,
