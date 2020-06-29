@@ -27,15 +27,20 @@ class Planet extends React.Component{
         let styles={
             backgroundColor:this.props.color,
             radius:15,            
+            textX:(this.state.x*5-0.5),
+            textY:(this.state.y*5+4.5),
+            Cx:this.state.x*5,
+            Cy:this.state.y*5,
+            palnetRadius:this.state.radius
         }
 
         return(          
                 <g>
                     
-                    <circle cx = {this.state.x*5} cy = {this.state.y*5} r = {styles.radius+2} fill = "#525576" stroke="#acb4b6"  strokeDasharray="5,5"></circle>
-                    <circle cx = {this.state.x*5} cy = {this.state.y*5} r = {styles.radius} fill = {styles.backgroundColor} ></circle>    
+                    <circle cx = {styles.Cx} cy = {styles.Cy} r = {styles.radius+2} fill = "#525576" stroke="#acb4b6"  strokeDasharray="5,5"></circle>
+                    <circle cx = {styles.Cx} cy = {styles.Cy} r = {styles.radius} fill = {styles.backgroundColor} ></circle>    
                             
-                    <text x={this.state.x*5} y={this.state.y*5} textAnchor="middle">
+                    <text x={styles.textX-0.5} y={styles.textY} textAnchor="middle">
                         {                    
                             this.props.active? this.state.power : 3
                         }                    
