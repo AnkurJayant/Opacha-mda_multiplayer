@@ -9,8 +9,10 @@ class Planet extends React.Component{
             power:3,       
             id:0,
             active:false,
-            color:""     
+            color:"",
+            mode:"normal"     
         }
+        this.powerInc=this.powerInc.bind(this)
     }
     
     componentDidMount(){        
@@ -18,10 +20,15 @@ class Planet extends React.Component{
             x:this.props.x,
             y:this.props.y,
             id:this.props.id            
-        })                                
-        setTimeout(()=>this.setState(prevState=>({power:prevState.power+1})),1000)
+        })                 
+        this.state.mode==="normal"? this.interval=setInterval(()=>this.powerInc(),1000) :this.interval=setInterval(()=>this.powerInc(),500) 
     }    
-
+    powerInc(){
+        this.setState(prevState=>({power:prevState.power+1}))
+    }
+    componentWillUnmount(){
+        clearInterval(this.interval)
+    }
     render(){
 
         let styles={
@@ -40,7 +47,8 @@ class Planet extends React.Component{
                     <circle cx = {styles.Cx} cy = {styles.Cy} r = {styles.radius+2} fill = "#525576" stroke="#acb4b6"  strokeDasharray="5,5"></circle>
                     <circle cx = {styles.Cx} cy = {styles.Cy} r = {styles.radius} fill = {styles.backgroundColor} ></circle>    
                             
-                    <text x={styles.textX-0.5} y={styles.textY} textAnchor="middle">
+                    <text x={styles.textX} y={styles.textY} textAnchor="middle">
+                        <button>some</button>
                         {                    
                             this.props.active? this.state.power : 3
                         }                    
