@@ -1,0 +1,18 @@
+
+
+@keyframes hasten{
+    from{
+        stroke-dashoffset: 31;
+    }
+    to{
+        stroke-dashoffset: 84.6;
+    }
+}
+@keyframes shield{
+    from{
+        stroke-dashoffset: 3;
+    }
+    to{
+        stroke-dashoffset: 10;
+    }
+}

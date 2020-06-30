@@ -1,5 +1,7 @@
 import React from 'react'
-
+import './Planet.css'
+import shieldLogo from '../shield.jpg'
+import hastenLogo from '../hasten.jpg'
 class Planet extends React.Component{
     constructor(){
         super()
@@ -13,7 +15,8 @@ class Planet extends React.Component{
             mode:"normal",
             inFocus:true,
             radius:15,
-            visible:"hidden"     
+            buttonsVisibleA:"hidden",     
+            buttonsVisibleB:"hidden"     
         }
         this.powerInc=this.powerInc.bind(this)
         this.handleClick=this.handleClick.bind(this)
@@ -35,9 +38,18 @@ class Planet extends React.Component{
     powerInc(){
         if(this.state.mode==="hasten")
         {
-            this.setState(prevState=>({power:prevState.power+2}))
+            clearTimeout(this.interval)
+            this.interval=setInterval(()=>this.powerInc(),500)   
+            this.setState(prevState=>({
+                power:prevState.power+1,                                
+            }))         
+            
         }else {
-            this.setState(prevState=>({power:prevState.power+1}))
+            clearTimeout(this.interval)
+            this.interval=setInterval(()=>this.powerInc(),1000)   
+            this.setState(prevState=>({
+                power:prevState.power+1,                
+            }))
         }
     }
     componentWillUnmount(){
@@ -46,13 +58,21 @@ class Planet extends React.Component{
     handleClick=()=>{
         this.setState(prevState=>({
             inFocus:prevState.active? !prevState.inFocus:prevState.inFocus,
-            radius:prevState.inFocus ? prevState.active ? prevState.radius+3 : prevState.radius  : prevState.active ? prevState.radius-3 : prevState.radius,
-            visible: prevState.inFocus ? prevState.active ? "visible" : "hidden" : "hidden"
+            radius:prevState.inFocus ? prevState.active ? prevState.radius+1 : prevState.radius  : prevState.active ? prevState.radius-1 : prevState.radius,
+            buttonsVisibleA: prevState.inFocus ? prevState.active ? prevState.mode==="hasten" ? "hidden" : "visible" : "hidden":"hidden",
+            buttonsVisibleB: prevState.inFocus ? prevState.active ? prevState.mode==="shield" ? "hidden" : "visible" : "hidden":"hidden",
         }))                
 
     }
+
     handleMode(Mode,id){
-        this.setState({mode:Mode,visibile:this.state.visible})
+        this.setState(prevState=>({
+            mode:Mode,
+            inFocus:!prevState.inFocus,            
+            radius:prevState.inFocus ? prevState.radius+1 : prevState.radius-1                     ,
+            buttonsVisibleA: prevState.inFocus ? prevState.active ? prevState.mode==="hasten" ? "hidden" : "visible" : "hidden":"hidden",
+            buttonsVisibleB: prevState.inFocus ? prevState.active ? prevState.mode==="shield" ? "hidden" : "visible" : "hidden":"hidden",
+        }))
 
     }
 
@@ -70,45 +90,47 @@ class Planet extends React.Component{
         let buttonStyles={
             X:gridStyle.width,
             Y:gridStyle.height,
-            visibility:this.state.visible
+            visibilityA:this.state.buttonsVisibleA,
+            visibilityB:this.state.buttonsVisibleB
         }
+        
         return(          
             <g>
-                    <rect 
-                        x={(buttonStyles.X/3)-35} 
-                        y={buttonStyles.Y-60} 
-                        width="30" height="30" 
-                        stroke="black" 
-                        fill="transparent" 
-                        stroke-width="2" 
-                        visibility={this.state.visible}/>      
-
-                    <text x={buttonStyles.X/3-20} 
-                          y={buttonStyles.Y-41} 
-                          textAnchor="middle"  
-                          visibility={buttonStyles.visibility}
-                          onClick={()=>this.handleMode("hasten",this.state.id)}
-                        >up
-                    </text>                   
+                
                     
-                    <rect 
-                        x={(buttonStyles.X*2/3)-15} 
-                        y={buttonStyles.Y-60} 
-                        width="30" height="30" 
-                        stroke="black" 
-                        fill="transparent" 
-                        stroke-width="2" 
-                        visibility={this.state.visible}/>                        
-                    <text 
-                        x={(buttonStyles.X*2/3)}
-                        y={buttonStyles.Y-41}    
-                        textAnchor="middle" 
-                        visibility={this.state.visible}
+   
+                <image 
+                    x={(buttonStyles.X*2/3)}
+                    y={buttonStyles.Y-82}    
+                    width="30" height="30" 
+                    href={shieldLogo} visibility={buttonStyles.visibilityB}
+                    onClick={()=>this.handleMode("shield",this.state.id)}/>
+                <circle 
+                        cx={(buttonStyles.X*2/3+15)}
+                        cy={buttonStyles.Y-41-28}
+                        r = {styles.planetRadius+2} 
+                        fill = "transparent" 
+                        stroke="#acb4b6"     
+                        visibility={buttonStyles.visibilityB}                     
                         onClick={()=>this.handleMode("shield",this.state.id)}
-                        >shield
-                    </text>                   
+                    ></circle>
                     
                     
+                    <text x={(buttonStyles.X/3)-35} y={buttonStyles.Y-60}
+                        textAnchor="middle" 
+                        visibility={buttonStyles.visibilityA}
+                        onClick={()=>this.handleMode("hasten",this.state.id)}
+                        fontSize="24px"
+                        >$
+                    </text>                                                                                                 
+                    <circle 
+                        cx={(buttonStyles.X/3)-35} cy={buttonStyles.Y-68}
+                        r = {styles.planetRadius+2} 
+                        fill = "transparent" 
+                        stroke="#acb4b6"     
+                        visibility={buttonStyles.visibilityA}                     
+                        onClick={()=>this.handleMode("hasten",this.state.id)}
+                    ></circle>
                     <circle 
                         cx = {styles.Cx} 
                         cy = {styles.Cy} 
@@ -116,6 +138,7 @@ class Planet extends React.Component{
                         fill = "#525576" 
                         stroke="#acb4b6"  
                         strokeDasharray="5,5"
+                            onClick={this.handleClick}
                         ></circle>
                     
                     <circle 
@@ -123,11 +146,38 @@ class Planet extends React.Component{
                         cy = {styles.Cy} 
                         r = {styles.planetRadius} 
                         fill = {styles.backgroundColor} 
+                        onClick={this.handleClick}
                     ></circle>    
 
-                    <text x={styles.textX} y={styles.textY} textAnchor="middle" onClick={this.handleClick}>                                                
+                    <circle 
+                        className="path"
+                        cx = {styles.Cx} 
+                        cy = {styles.Cy} 
+                        r = {styles.planetRadius-4}                         
+                        stroke="#606060"  
+                        strokeDasharray="4,10"    
+                        strokeWidth="2"                    
+                        style={{animation:`hasten 1s infinite`}}                        
+                        fill="transparent"
+                        visibility={this.state.mode === "hasten" ? "visible" : "hidden"}
+                        onClick={this.handleClick}
+                    ></circle>
+                    <circle 
+                        className="path"
+                        cx = {styles.Cx} 
+                        cy = {styles.Cy} 
+                        r = {styles.planetRadius-4}                         
+                        stroke="#606060"  
+                        strokeDasharray="5,2"    
+                        strokeWidth="3"                    
+                        style={{animation:`shield 1s infinite`}}                        
+                        fill="transparent"
+                        visibility={this.state.mode === "shield" ? "visible" : "hidden"}
+                        onClick={this.handleClick}
+                    ></circle>
+                    <text x={styles.textX} y={styles.textY} textAnchor="middle" fontSize="12px" onClick={this.handleClick}>                                                
                         {                    
-                            this.props.active? this.state.power : 3
+                            this.props.active ? this.state.power : 3
                         }                    
                     </text>
                 </g>  
