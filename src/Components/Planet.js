@@ -1,7 +1,6 @@
 import React from 'react'
 import './Planet.css'
 import shieldLogo from '../shield.jpg'
-import hastenLogo from '../hasten.jpg'
 class Planet extends React.Component{
     constructor(){
         super()
@@ -21,6 +20,7 @@ class Planet extends React.Component{
         this.powerInc=this.powerInc.bind(this)
         this.handleClick=this.handleClick.bind(this)
         this.handleMode=this.handleMode.bind(this)
+        this.resetFocus=this.resetFocus.bind(this)
     }
     
     componentDidMount(){        
@@ -28,7 +28,8 @@ class Planet extends React.Component{
             x:this.props.x,
             y:this.props.y,
             id:this.props.id,
-            active:this.props.active            
+            active:this.props.active  ,     
+            inFocus:!this.props.inFocus              
         })                 
         this.interval=setInterval(()=>this.powerInc(),1000)
     }    
@@ -57,12 +58,12 @@ class Planet extends React.Component{
     }
     handleClick=()=>{
         this.setState(prevState=>({
-            inFocus:prevState.active? !prevState.inFocus:prevState.inFocus,
+            inFocus:prevState.active ? (!prevState.inFocus): prevState.inFocus,
             radius:prevState.inFocus ? prevState.active ? prevState.radius+1 : prevState.radius  : prevState.active ? prevState.radius-1 : prevState.radius,
             buttonsVisibleA: prevState.inFocus ? prevState.active ? prevState.mode==="hasten" ? "hidden" : "visible" : "hidden":"hidden",
             buttonsVisibleB: prevState.inFocus ? prevState.active ? prevState.mode==="shield" ? "hidden" : "visible" : "hidden":"hidden",
         }))                
-
+        
     }
 
     handleMode(Mode,id){
@@ -75,7 +76,9 @@ class Planet extends React.Component{
         }))
 
     }
-
+    resetFocus(){
+        this.setState({inFocus:false})
+    }
     render(){
         let styles={
             backgroundColor:this.props.color,                        
@@ -96,9 +99,7 @@ class Planet extends React.Component{
         
         return(          
             <g>
-                
-                    
-   
+
                 <image 
                     x={(buttonStyles.X*2/3)}
                     y={buttonStyles.Y-82}    
@@ -138,7 +139,8 @@ class Planet extends React.Component{
                         fill = "#525576" 
                         stroke="#acb4b6"  
                         strokeDasharray="5,5"
-                            onClick={this.handleClick}
+                        visibility= {!this.state.inFocus ? "visible" : "hidden"}
+                        onClick={this.handleClick}
                         ></circle>
                     
                     <circle 
@@ -147,6 +149,7 @@ class Planet extends React.Component{
                         r = {styles.planetRadius} 
                         fill = {styles.backgroundColor} 
                         onClick={this.handleClick}
+                        
                     ></circle>    
 
                     <circle 
