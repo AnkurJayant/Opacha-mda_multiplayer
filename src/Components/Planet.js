@@ -12,15 +12,15 @@ class Planet extends React.Component{
             active:false, /*denotes if it's a player or a dead planet */
             color:"",
             mode:"normal",
-            inFocus:true,
+            inFocus:false,
             radius:15,
             buttonsVisibleA:"hidden",     
             buttonsVisibleB:"hidden"     
         }
+        this.permit=0;
         this.powerInc=this.powerInc.bind(this)
         this.handleClick=this.handleClick.bind(this)
         this.handleMode=this.handleMode.bind(this)
-        this.resetFocus=this.resetFocus.bind(this)
     }
     
     componentDidMount(){        
@@ -28,14 +28,12 @@ class Planet extends React.Component{
             x:this.props.x,
             y:this.props.y,
             id:this.props.id,
-            active:this.props.active  ,     
-            inFocus:!this.props.inFocus              
+            active:this.props.active,     
+            inFocus:this.props.inFocus              
         })                 
         this.interval=setInterval(()=>this.powerInc(),1000)
-    }    
-    componentDidUpdate(){
+    } 
 
-    }
     powerInc(){
         if(this.state.mode==="hasten")
         {
@@ -56,32 +54,34 @@ class Planet extends React.Component{
     componentWillUnmount(){
         clearInterval(this.interval)
     }
+    
     handleClick=()=>{
-        this.setState(prevState=>({
-            inFocus:prevState.active ? (!prevState.inFocus): prevState.inFocus,
-            radius:prevState.inFocus ? prevState.active ? prevState.radius+1 : prevState.radius  : prevState.active ? prevState.radius-1 : prevState.radius,
-            buttonsVisibleA: prevState.inFocus ? prevState.active ? prevState.mode==="hasten" ? "hidden" : "visible" : "hidden":"hidden",
-            buttonsVisibleB: prevState.inFocus ? prevState.active ? prevState.mode==="shield" ? "hidden" : "visible" : "hidden":"hidden",
-        }))                
-        
+        if(this.state.active)this.props.permit(this.permit++)            
+        if(this.state.active){
+            this.props.setFocus(this.state.id)        
+            this.setState(prevState=>({            
+                buttonsVisibleA:  prevState.active ? prevState.mode==="hasten" ? "hidden" : "visible" : "hidden",
+                buttonsVisibleB:  prevState.active ? prevState.mode==="shield" ? "hidden" : "visible" : "hidden",
+            }))                               
+        }
     }
-
     handleMode(Mode,id){
-        this.setState(prevState=>({
-            mode:Mode,
-            inFocus:!prevState.inFocus,            
-            radius:prevState.inFocus ? prevState.radius+1 : prevState.radius-1                     ,
-            buttonsVisibleA: prevState.inFocus ? prevState.active ? prevState.mode==="hasten" ? "hidden" : "visible" : "hidden":"hidden",
-            buttonsVisibleB: prevState.inFocus ? prevState.active ? prevState.mode==="shield" ? "hidden" : "visible" : "hidden":"hidden",
-        }))
+        console.log(this.props.getID(),this.props.inFocus)
+        if(this.state.power>=10)
+        {
+            this.setState({mode:Mode})
+            this.setState(prevState=>({                                
+                buttonsVisibleA: prevState.mode==="hasten" ? "hidden" : "visible" ,
+                buttonsVisibleB: prevState.mode==="shield" ? "hidden" : "visible" ,
+                power:prevState.power-10
+            }))
+        }
+    }
 
-    }
-    resetFocus(){
-        this.setState({inFocus:false})
-    }
     render(){
         let styles={
-            backgroundColor:this.props.color,                        
+            backgroundColor:this.props.color,    
+            inFocus:this.props.inFocus,                    
             textX:(this.state.x*5-0.5),
             textY:(this.state.y*5+4.5),
             Cx:this.state.x*5,
@@ -99,51 +99,51 @@ class Planet extends React.Component{
         
         return(          
             <g>
-
-                <image 
+                <image //shield image
                     x={(buttonStyles.X*2/3)}
                     y={buttonStyles.Y-82}    
                     width="30" height="30" 
-                    href={shieldLogo} visibility={buttonStyles.visibilityB}
+                    href={shieldLogo} visibility={styles.inFocus ? buttonStyles.visibilityB : "hidden"}
                     onClick={()=>this.handleMode("shield",this.state.id)}/>
-                <circle 
+                <circle //covering of shield
                         cx={(buttonStyles.X*2/3+15)}
                         cy={buttonStyles.Y-41-28}
                         r = {styles.planetRadius+2} 
                         fill = "transparent" 
                         stroke="#acb4b6"     
-                        visibility={buttonStyles.visibilityB}                     
+                        visibility={styles.inFocus ? buttonStyles.visibilityB : "hidden"}
                         onClick={()=>this.handleMode("shield",this.state.id)}
                     ></circle>
                     
                     
-                    <text x={(buttonStyles.X/3)-35} y={buttonStyles.Y-60}
+                    <text x={(buttonStyles.X/3)-35} y={buttonStyles.Y-60}   //dollar symbol
                         textAnchor="middle" 
-                        visibility={buttonStyles.visibilityA}
+                        visibility={styles.inFocus ? buttonStyles.visibilityA : "hidden"}
                         onClick={()=>this.handleMode("hasten",this.state.id)}
                         fontSize="24px"
                         >$
                     </text>                                                                                                 
-                    <circle 
+                    <circle //covering of dollar
                         cx={(buttonStyles.X/3)-35} cy={buttonStyles.Y-68}
                         r = {styles.planetRadius+2} 
                         fill = "transparent" 
                         stroke="#acb4b6"     
-                        visibility={buttonStyles.visibilityA}                     
+                        visibility={styles.inFocus ? buttonStyles.visibilityA : "hidden"}                   
                         onClick={()=>this.handleMode("hasten",this.state.id)}
                     ></circle>
-                    <circle 
+
+                    <circle //border of planets 
                         cx = {styles.Cx} 
                         cy = {styles.Cy} 
                         r = {styles.planetRadius+2} 
                         fill = "#525576" 
                         stroke="#acb4b6"  
                         strokeDasharray="5,5"
-                        visibility= {!this.state.inFocus ? "visible" : "hidden"}
+                        visibility= {styles.inFocus ? "visible" : "hidden"}
                         onClick={this.handleClick}
                         ></circle>
                     
-                    <circle 
+                    <circle //the planet
                         cx = {styles.Cx} 
                         cy = {styles.Cy} 
                         r = {styles.planetRadius} 
@@ -152,7 +152,7 @@ class Planet extends React.Component{
                         
                     ></circle>    
 
-                    <circle 
+                    <circle //hasten animation
                         className="path"
                         cx = {styles.Cx} 
                         cy = {styles.Cy} 
@@ -165,7 +165,7 @@ class Planet extends React.Component{
                         visibility={this.state.mode === "hasten" ? "visible" : "hidden"}
                         onClick={this.handleClick}
                     ></circle>
-                    <circle 
+                    <circle //shield animation
                         className="path"
                         cx = {styles.Cx} 
                         cy = {styles.Cy} 
@@ -185,7 +185,7 @@ class Planet extends React.Component{
                     </text>
                 </g>  
         )
-    
+        
     }
 }
 export default Planet
