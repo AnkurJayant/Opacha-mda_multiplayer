@@ -55,13 +55,13 @@ class Planet extends React.Component{
         clearInterval(this.interval)
     }
     
-    handleClick=()=>{
-        if(this.state.active)this.props.permit(this.permit++)            
+    handleClick=()=>{        
         if(this.state.active){
+            this.props.permit(this.permit++)            
             this.props.setFocus(this.state.id)        
             this.setState(prevState=>({            
-                buttonsVisibleA:  prevState.active ? prevState.mode==="hasten" ? "hidden" : "visible" : "hidden",
-                buttonsVisibleB:  prevState.active ? prevState.mode==="shield" ? "hidden" : "visible" : "hidden",
+                buttonsVisibleA:  prevState.mode==="hasten" ? "hidden" : "visible" ,
+                buttonsVisibleB:  prevState.mode==="shield" ? "hidden" : "visible" ,
             }))                               
         }
     }
@@ -178,7 +178,7 @@ class Planet extends React.Component{
                         visibility={this.state.mode === "shield" ? "visible" : "hidden"}
                         onClick={this.handleClick}
                     ></circle>
-                    <text x={styles.textX} y={styles.textY} textAnchor="middle" fontSize="12px" onClick={this.handleClick}>                                                
+                    <text cursor="pointer" x={styles.textX} y={styles.textY} textAnchor="middle" fontSize="12px" onClick={this.handleClick}>                                                
                         {                    
                             this.props.active ? this.state.power : 3
                         }                    
