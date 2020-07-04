@@ -24,27 +24,36 @@ class Planet extends React.Component{
     }
     
     componentDidMount(){        
-        this.setState({            
+        this.setState({                        
             x:this.props.x,
             y:this.props.y,
             id:this.props.id,
             active:this.props.active,     
-            inFocus:this.props.inFocus              
-        })                 
+            inFocus:this.props.inFocus,                          
+        })
+        
         this.interval=setInterval(()=>this.powerInc(),1000)
     } 
 
+    
+    componentWillReceiveProps(){        
+        
+    }
+    componentDidUpdate(){                      
+            
+    }
     powerInc(){
         if(this.state.mode==="hasten")
         {
-            clearTimeout(this.interval)
+            clearInterval(this.interval)
             this.interval=setInterval(()=>this.powerInc(),500)   
             this.setState(prevState=>({
+                ...prevState,
                 power:prevState.power+1,                                
             }))         
             
         }else {
-            clearTimeout(this.interval)
+            clearInterval(this.interval)
             this.interval=setInterval(()=>this.powerInc(),1000)   
             this.setState(prevState=>({
                 power:prevState.power+1,                
@@ -54,19 +63,24 @@ class Planet extends React.Component{
     componentWillUnmount(){
         clearInterval(this.interval)
     }
-    
     handleClick=()=>{        
         if(this.state.active){
-            this.props.permit(this.permit++)            
+            //could be a reciever or a sender
+            this.props.permit()            
             this.props.setFocus(this.state.id)        
             this.setState(prevState=>({            
                 buttonsVisibleA:  prevState.mode==="hasten" ? "hidden" : "visible" ,
                 buttonsVisibleB:  prevState.mode==="shield" ? "hidden" : "visible" ,
             }))                               
         }
+        else{
+            this.props.handleTransaction(this.state.id) 
+            //if its a dead planet and we clicked on it (it could be a possible transaction and this could be a possible reciever(gotta check if there's some adjacent planet in focus in draw.js))
+        }
     }
     handleMode(Mode,id){
-        console.log(this.props.getID(),this.props.inFocus)
+        this.props.permit(this.permit++)            
+        // console.log(this.props.getID(),this.props.inFocus)
         if(this.state.power>=10)
         {
             this.setState({mode:Mode})
@@ -79,6 +93,12 @@ class Planet extends React.Component{
     }
 
     render(){
+        //console.log("infocusID",this.props.inFocusID)
+        if(this.props.inFocusID===this.state.id){
+            this.props.updatePower(this.state.power)
+        }else{
+            this.props.updatePower(false)
+        }
         let styles={
             backgroundColor:this.props.color,    
             inFocus:this.props.inFocus,                    
@@ -122,7 +142,8 @@ class Planet extends React.Component{
                         onClick={()=>this.handleMode("hasten",this.state.id)}
                         fontSize="24px"
                         >$
-                    </text>                                                                                                 
+                    </text>    
+
                     <circle //covering of dollar
                         cx={(buttonStyles.X/3)-35} cy={buttonStyles.Y-68}
                         r = {styles.planetRadius+2} 
